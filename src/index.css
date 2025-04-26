@@ -1,4 +1,4 @@
-/* index.css */
+/* Add these to your existing CSS */
 html, body, #root {
   width: 100%;
   height: 100%;
@@ -15,27 +15,66 @@ html, body, #root {
   height: 100vh;
 }
 
-canvas {
+.overlay {
+  position: fixed;
+  pointer-events: auto;
+  color: white;
+  font-family: 'Arial', sans-serif;
+}
+
+.profile-menu {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 100;
+}
+
+.profile-button {
+  background: rgba(30, 136, 229, 0.8);
+  border: none;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  backdrop-filter: blur(5px);
+}
+
+.profile-dropdown {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  background: rgba(40, 40, 40, 0.9);
+  border-radius: 4px;
+  padding: 10px 0;
+  min-width: 200px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(5px);
+  display: none;
+}
+
+.profile-dropdown.show {
   display: block;
-  width: 100%;
-  height: 100%;
 }
 
-:root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+.profile-dropdown a {
+  color: white;
+  padding: 10px 20px;
+  text-decoration: none;
+  display: block;
 }
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+.profile-dropdown a:hover {
+  background: rgba(30, 136, 229, 0.3);
+}
+
+.sample-text {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 15px;
+  border-radius: 8px;
+  max-width: 300px;
+  backdrop-filter: blur(5px);
 }

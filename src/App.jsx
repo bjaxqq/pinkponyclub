@@ -1,28 +1,35 @@
-import { Canvas } from "@react-three/fiber"
-import { Sky, Stats } from "@react-three/drei"
-import ThirdPersonController from "./ThirdPersonController"
-import Environment from "./Environment"
-import "./App.css"
+import { Canvas } from '@react-three/fiber'
+import Environment from './Environment'
+import ThirdPersonController from './ThirdPersonController'
+import Overlay from './Overlay'
 
-function App() {
+export default function App() {
   return (
     <div className="scene-container">
-      <Canvas shadows camera={{ position: [0, 2, 5], fov: 75 }}>
-        <Sky sunPosition={[100, 20, 100]} />
-        <ambientLight intensity={0.3} />
-        <directionalLight 
-          position={[10, 10, 5]} 
-          intensity={1} 
-          castShadow 
-          shadow-mapSize-width={2048} 
+      {/* 3D Canvas */}
+      <Canvas
+        shadows
+        camera={{
+          fov: 75,
+          near: 0.1,
+          far: 1000,
+          position: [0, 5, -10]
+        }}
+      >
+        <ambientLight intensity={0.5} />
+        <directionalLight
+          castShadow
+          position={[10, 20, 10]}
+          intensity={1}
+          shadow-mapSize-width={2048}
           shadow-mapSize-height={2048}
         />
-        <ThirdPersonController />
         <Environment />
-        <Stats />
+        <ThirdPersonController />
       </Canvas>
+
+      {/* UI Overlay */}
+      <Overlay />
     </div>
   )
 }
-
-export default App
