@@ -31,6 +31,14 @@ app.get('/tasks', async (req, res) => {
 app.post('/addTask', async (req, res) => {
         try {
                 const task = await readJsonFile('tasks.json');
+                const newTask = req.body;
+                newTask.points = 5
+                console.log(newTask)
+                task.push(newTask);
+                console.log(task)
+
+                await writeJsonFile('tasks.json', task);
+
                 return res.status(200).json(task);
 
 
