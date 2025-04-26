@@ -1,9 +1,12 @@
+import { useState } from 'react'
 import { Canvas } from '@react-three/fiber'
 import Environment from './Environment'
 import ThirdPersonController from './ThirdPersonController'
 import Overlay from './Overlay'
 
 export default function App() {
+  const [showAddTask, setShowAddTask] = useState(false)
+
   return (
     <div className="scene-container">
       {/* 3D Canvas */}
@@ -24,12 +27,15 @@ export default function App() {
           shadow-mapSize-width={2048}
           shadow-mapSize-height={2048}
         />
-        <Environment />
+        <Environment onAddTaskClick={() => setShowAddTask(true)} />
         <ThirdPersonController />
       </Canvas>
 
       {/* UI Overlay */}
-      <Overlay />
+      <Overlay 
+        showAddTask={showAddTask} 
+        setShowAddTask={setShowAddTask}
+      />
     </div>
   )
 }

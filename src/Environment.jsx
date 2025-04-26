@@ -34,7 +34,7 @@ export default function Environment({ onAddTaskClick }) {
         position={[0, 2, 5]}
         onClick={(e) => {
           e.stopPropagation()
-          onAddTaskClick()
+          onAddTaskClick && onAddTaskClick()
         }}
         onPointerOver={() => document.body.style.cursor = 'pointer'}
         onPointerOut={() => document.body.style.cursor = 'auto'}

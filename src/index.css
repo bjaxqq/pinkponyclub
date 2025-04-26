@@ -78,3 +78,83 @@ html, body, #root {
   max-width: 300px;
   backdrop-filter: blur(5px);
 }
+
+/* Add Task Modal Styles */
+.add-task-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
+  z-index: 1000;
+}
+
+.modal-content {
+  background: rgba(40, 40, 40, 0.95);
+  border-radius: 8px;
+  padding: 25px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  position: relative;
+}
+
+.modal-content h2 {
+  margin-top: 0;
+  color: white;
+  text-align: center;
+}
+
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 5px 10px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: white;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 4px;
+  border: 1px solid #555;
+  background: rgba(30, 30, 30, 0.8);
+  color: white;
+  font-size: 16px;
+}
+
+.submit-button {
+  width: 100%;
+  padding: 12px;
+  background: rgba(30, 136, 229, 0.8);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.submit-button:hover {
+  background: rgba(30, 136, 229, 1);
+}
