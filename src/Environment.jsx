@@ -2,30 +2,19 @@
 
 import { useRef } from "react"
 import { useFrame } from "@react-three/fiber"
+import { Text } from '@react-three/drei'
 
-export default function Environment() {
-  // Create a grid of cubes for visual reference
-  const cubes = []
-  const cubeRefs = useRef([])
+export default function Environment({ onAddTaskClick }) {
+  const cubeRef = useRef()
+  const groupRef = useRef()
 
-  // Create a 5x5 grid of cubes
-  for (let x = -10; x <= 10; x += 5) {
-    for (let z = -10; z <= 10; z += 5) {
-      if (x === 0 && z === 0) continue // Skip center where character starts
-      cubes.push({ position: [x, 1, z], color: `hsl(${((x + 10) * (z + 10)) % 360}, 70%, 60%)` })
-    }
-  }
-
-  // Animate cubes
+  // Animate cube
   useFrame((state) => {
     const time = state.clock.getElapsedTime()
-
-    cubeRefs.current.forEach((cube, i) => {
-      if (cube) {
-        cube.position.y = 1 + Math.sin(time + i * 0.5) * 0.5
-        cube.rotation.y = time * 0.2 + i * 0.1
-      }
-    })
+    if (cubeRef.current) {
+      cubeRef.current.position.y = Math.sin(time) * 0.2 // Subtle float
+      groupRef.current.rotation.y = time * 0.5 // Rotate the whole group
+    }
   })
 
   return (
@@ -39,13 +28,43 @@ export default function Environment() {
       {/* Grid for reference */}
       <gridHelper args={[100, 100, "#444444", "#222222"]} />
 
-      {/* Cubes */}
-      {cubes.map((cube, i) => (
-        <mesh key={i} ref={(el) => (cubeRefs.current[i] = el)} position={cube.position} castShadow receiveShadow>
-          <boxGeometry args={[1, 2, 1]} />
-          <meshStandardMaterial color={cube.color} />
+      {/* Floating cube with text */}
+      <group 
+        ref={groupRef} 
+        position={[0, 2, 5]}
+        onClick={(e) => {
+          e.stopPropagation()
+          onAddTaskClick()
+        }}
+        onPointerOver={() => document.body.style.cursor = 'pointer'}
+        onPointerOut={() => document.body.style.cursor = 'auto'}
+      >
+        <mesh ref={cubeRef} castShadow receiveShadow>
+          <boxGeometry args={[1.5, 1.5, 1.5]} />
+          <meshStandardMaterial color="white" />
         </mesh>
-      ))}
+        {/* Text on front face */}
+        <Text
+          position={[0, 0, 0.76]}
+          rotation={[0, Math.PI, 0]} // Fixes backward text
+          fontSize={0.3}
+          color="black"
+          anchorX="center"
+          anchorY="middle"
+        >
+          Add Task
+        </Text>
+        {/* Text on back face */}
+        <Text
+          position={[0, 0, -0.76]}
+          fontSize={0.3}
+          color="black"
+          anchorX="center"
+          anchorY="middle"
+        >
+          Add Task
+        </Text>
+      </group>
     </>
   )
 }
