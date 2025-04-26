@@ -3,7 +3,29 @@
 import { useRef } from "react"
 import { useFrame } from "@react-three/fiber"
 import { Text } from '@react-three/drei'
+import { useState, useEffect } from 'react'; // Import useEffect
 
+async function getTasks() {
+  try {
+    const requestOptions = {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    };
+    const response = await fetch('http://localhost:3000/tasks', requestOptions);
+    const data = await response.json();
+    return data[0].taskNames;
+  } catch (error) {
+    alert('An error occurred while fetching tasks.');
+    console.error(error);
+    return null; // Or a suitable fallback value
+  }
+}
+getTasks()
+// function makeCube(task) {
+
+// }
 export default function Environment({ onAddTaskClick }) {
   const cubeRef = useRef()
   const groupRef = useRef()
@@ -29,8 +51,8 @@ export default function Environment({ onAddTaskClick }) {
       <gridHelper args={[100, 100, "#444444", "#222222"]} />
 
       {/* Floating cube with text */}
-      <group 
-        ref={groupRef} 
+      <group
+        ref={groupRef}
         position={[0, 2, 5]}
         onClick={(e) => {
           e.stopPropagation()
