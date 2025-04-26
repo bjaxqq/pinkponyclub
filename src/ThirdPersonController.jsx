@@ -106,24 +106,24 @@ export default function ThirdPersonController() {
     }
 
     // Update camera position to follow character
-    const idealOffset = new THREE.Vector3(0, 3, -5)
-    idealOffset.applyQuaternion(characterRef.current.quaternion)
-    idealOffset.add(characterRef.current.position)
+    // const idealOffset = new THREE.Vector3(0, 3, -5)
+    // idealOffset.applyQuaternion(characterRef.current.quaternion)
+    // idealOffset.add(characterRef.current.position)
 
-    // Update orbit controls target
-    controlsRef.current.target.copy(characterRef.current.position)
+    // // Update orbit controls target
+    // controlsRef.current.target.copy(characterRef.current.position)
   })
 
   return (
     <>
-      <OrbitControls
+      {/* <OrbitControls
         ref={controlsRef}
         enableDamping
         dampingFactor={0.1}
         minDistance={2}
         maxDistance={10}
         maxPolarAngle={Math.PI / 2 - 0.1}
-      />
+      /> */}
       <mesh ref={characterRef} position={[0, characterSize[1] / 2, 0]} castShadow>
         <boxGeometry args={characterSize} />
         <meshStandardMaterial color="#1E88E5" />
