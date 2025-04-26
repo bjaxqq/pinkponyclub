@@ -6,20 +6,23 @@ import { Text } from "@react-three/drei"
 
 // TaskCube component for each individual task
 function TaskCube({ task, index }) {
+  const groupRef = useRef()
   const cubeRef = useRef()
 
   // Calculate position based on index to spread cubes out
   const position = [
     Math.sin(index * 1.5) * 5, // X position in a circle
-    2, // Y position (height)
+    1, // Y position (height) - lowered from 2 to 1
     Math.cos(index * 1.5) * 5, // Z position in a circle
   ]
 
   // Animate cube
   useFrame((state) => {
     const time = state.clock.getElapsedTime()
-    if (cubeRef.current) {
-      cubeRef.current.position.y = position[1] + Math.sin(time + index) * 0.2 // Floating effect
+    if (groupRef.current) {
+      // Move the entire group up and down
+      groupRef.current.position.y = position[1] + Math.sin(time + index) * 0.2 // Floating effect
+      // Only rotate the cube, not the text
       cubeRef.current.rotation.y = time * 0.5 // Spinning
     }
   })
@@ -34,41 +37,32 @@ function TaskCube({ task, index }) {
 
   return (
     <group
+      ref={groupRef}
       position={position}
       onClick={handleClick}
       onPointerOver={() => (document.body.style.cursor = "pointer")}
       onPointerOut={() => (document.body.style.cursor = "auto")}
     >
-      <mesh ref={cubeRef} castShadow receiveShadow>
-        <boxGeometry args={[1.5, 1.5, 1.5]} />
-        <meshStandardMaterial color={task.urgent === "yes" ? "#f44336" : "#2196F3"} />
-      </mesh>
-
-      {/* Task name */}
-      <Text position={[0, 1.2, 0]} fontSize={0.3} color="white" anchorX="center" anchorY="middle" maxWidth={2}>
+      {/* Task name - positioned relative to the group */}
+      <Text position={[0, 1.5, 0]} fontSize={0.3} color="white" anchorX="center" anchorY="middle" maxWidth={2}>
         {task.task}
       </Text>
 
-      {/* Points */}
-      <Text position={[0, 0.8, 0]} fontSize={0.25} color="#FFEB3B" anchorX="center" anchorY="middle">
+      {/* Points - positioned relative to the group */}
+      <Text position={[0, 1.1, 0]} fontSize={0.25} color="#FFEB3B" anchorX="center" anchorY="middle">
         {task.points || 5} pts
       </Text>
+
+      {/* The cube itself */}
+      <mesh ref={cubeRef} position={[0, 0, 0]} castShadow receiveShadow>
+        <boxGeometry args={[1.5, 1.5, 1.5]} />
+        <meshStandardMaterial color={task.urgent === "yes" ? "#f44336" : "#2196F3"} />
+      </mesh>
     </group>
   )
 }
 
 export default function Environment({ onAddTaskClick, tasks }) {
-  // Create a floating "Add Task" button
-  const addButtonRef = useRef()
-
-  useFrame((state) => {
-    const time = state.clock.getElapsedTime()
-    if (addButtonRef.current) {
-      addButtonRef.current.position.y = 2 + Math.sin(time) * 0.2 // Subtle float
-      addButtonRef.current.rotation.y = time * 0.5 // Rotate
-    }
-  })
-
   return (
     <>
       {/* Ground */}
@@ -79,38 +73,6 @@ export default function Environment({ onAddTaskClick, tasks }) {
 
       {/* Grid for reference */}
       <gridHelper args={[100, 100, "#444444", "#222222"]} />
-
-      {/* Add Task Button */}
-      <group
-        ref={addButtonRef}
-        position={[0, 2, 0]}
-        onClick={(e) => {
-          e.stopPropagation()
-          onAddTaskClick && onAddTaskClick()
-        }}
-        onPointerOver={() => (document.body.style.cursor = "pointer")}
-        onPointerOut={() => (document.body.style.cursor = "auto")}
-      >
-        <mesh castShadow receiveShadow>
-          <boxGeometry args={[1.5, 1.5, 1.5]} />
-          <meshStandardMaterial color="white" />
-        </mesh>
-        {/* Text on front face */}
-        <Text
-          position={[0, 0, 0.76]}
-          rotation={[0, Math.PI, 0]} // Fixes backward text
-          fontSize={0.3}
-          color="black"
-          anchorX="center"
-          anchorY="middle"
-        >
-          Add Task
-        </Text>
-        {/* Text on back face */}
-        <Text position={[0, 0, -0.76]} fontSize={0.3} color="black" anchorX="center" anchorY="middle">
-          Add Task
-        </Text>
-      </group>
 
       {/* Render all task cubes */}
       {tasks.map((task, index) => (

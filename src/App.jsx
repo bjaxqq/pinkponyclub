@@ -25,7 +25,7 @@ export default function App() {
           fov: 75,
           near: 0.1,
           far: 1000,
-          position: [5, 5, 10],
+          position: [0, 5, 10],
         }}
       >
         <ambientLight intensity={0.5} />
