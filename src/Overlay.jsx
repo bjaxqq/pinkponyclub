@@ -155,7 +155,7 @@ export default function Overlay({
       <div className="overlay sample-text">
         <h3>Welcome to the Task Environment</h3>
         <p>
-          Use WASD or arrow keys to move around. Click on the cubes to visit task links or check the box to complete
+          Click on the cubes to visit task links or check the box to complete
           tasks.
         </p>
       </div>

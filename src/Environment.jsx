@@ -9,11 +9,7 @@ function TaskCube({ task, index, onCompleteTask }) {
   const cubeRef = useRef()
   const [hovered, setHovered] = useState(false)
 
-  const position = [
-    Math.sin(index * 1.5) * 5,
-    1,
-    Math.cos(index * 1.5) * 5,
-  ]
+  const position = [Math.sin(index * 1.5) * 5, 1, Math.cos(index * 1.5) * 5]
 
   useFrame((state) => {
     const time = state.clock.getElapsedTime()
@@ -81,15 +77,36 @@ export default function Environment({ onAddTaskClick, tasks, onCompleteTask, cur
     <>
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]} receiveShadow>
         <planeGeometry args={[100, 100]} />
-        <meshStandardMaterial color="#8BC34A" />
+        <meshStandardMaterial color="grey" />
       </mesh>
 
-      <gridHelper args={[100, 100, "#444444", "#222222"]} />
+      {/* Removed the grid helper that was here */}
 
-      <mesh position={[0, 1, 0]} castShadow receiveShadow>
-        <boxGeometry args={[3, 2, 0.5]} />
-        <meshStandardMaterial color={currentColor || "#1E88E5"} />
-      </mesh>
+      <group position={[0, 1, 0]}>
+        {/* Main face box */}
+        <mesh castShadow receiveShadow>
+          <boxGeometry args={[3, 2, 0.5]} />
+          <meshStandardMaterial color={currentColor || "#1E88E5"} />
+        </mesh>
+
+        {/* Left eye */}
+        <mesh position={[-0.7, 0.3, 0.26]} castShadow>
+          <sphereGeometry args={[0.2, 16, 16]} />
+          <meshStandardMaterial color="black" />
+        </mesh>
+
+        {/* Right eye */}
+        <mesh position={[0.7, 0.3, 0.26]} castShadow>
+          <sphereGeometry args={[0.2, 16, 16]} />
+          <meshStandardMaterial color="black" />
+        </mesh>
+
+        {/* Mouth */}
+        <mesh position={[0, -0.4, 0.26]} castShadow>
+          <boxGeometry args={[1.2, 0.2, 0.1]} />
+          <meshStandardMaterial color="black" />
+        </mesh>
+      </group>
 
       {tasks.map((task, index) => (
         <TaskCube key={index} task={task} index={index} onCompleteTask={onCompleteTask} />

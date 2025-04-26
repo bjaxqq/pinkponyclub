@@ -124,10 +124,6 @@ export default function ThirdPersonController() {
         maxDistance={10}
         maxPolarAngle={Math.PI / 2 - 0.1}
       /> */}
-      <mesh ref={characterRef} position={[0, characterSize[1] / 2, 0]} castShadow>
-        <boxGeometry args={characterSize} />
-        <meshStandardMaterial color="#1E88E5" />
-      </mesh>
     </>
   )
 }
