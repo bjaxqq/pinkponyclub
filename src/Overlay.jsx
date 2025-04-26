@@ -36,7 +36,15 @@ async function addTask(taskData) {
   }
 }
 
-export default function Overlay({ showAddTask, setShowAddTask, addNewTask }) {
+export default function Overlay({ 
+  showAddTask, 
+  setShowAddTask, 
+  addNewTask, 
+  totalPoints,
+  showShop,
+  setShowShop,
+  onColorPurchase
+}) {
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const [points, setPoints] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -57,7 +65,7 @@ export default function Overlay({ showAddTask, setShowAddTask, addNewTask }) {
     category: "general",
     difficulty: "medium",
     urgent: "no",
-    points: 5, // Default points
+    points: 5,
   })
 
   const handleInputChange = (e) => {
@@ -70,15 +78,11 @@ export default function Overlay({ showAddTask, setShowAddTask, addNewTask }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-
-    // Calculate points based on difficulty and urgency
-    let taskPoints = 5 // Default
+    let taskPoints = 5
 
     if (formData.difficulty === "easy") taskPoints = 3
     if (formData.difficulty === "medium") taskPoints = 5
     if (formData.difficulty === "hard") taskPoints = 10
-
-    // Add bonus for urgent tasks
     if (formData.urgent === "yes") taskPoints += 2
 
     const taskWithPoints = {
@@ -86,17 +90,13 @@ export default function Overlay({ showAddTask, setShowAddTask, addNewTask }) {
       points: taskPoints,
     }
 
-    // Send to backend
     try {
       await addTask(taskWithPoints)
     } catch (error) {
       console.error("Error submitting task:", error)
     }
 
-    // Add to local state
     addNewTask(taskWithPoints)
-
-    // Close modal and reset form
     setShowAddTask(false)
     setFormData({
       task: "",
@@ -108,12 +108,27 @@ export default function Overlay({ showAddTask, setShowAddTask, addNewTask }) {
     })
   }
 
+  const colorOptions = [
+    { name: "Red", value: "#f44336", cost: 10 },
+    { name: "Blue", value: "#2196F3", cost: 10 },
+    { name: "Green", value: "#4CAF50", cost: 10 },
+    { name: "Gold", value: "#FFD700", cost: 50 },
+    { name: "Purple", value: "#9C27B0", cost: 20 },
+    { name: "Pink", value: "#E91E63", cost: 15 },
+  ]
+
   return (
     <>
-      {/* Profile Dropdown */}
+      <div className="overlay points-counter">
+        <div className="points-display">
+          <span className="points-value">{totalPoints}</span>
+          <span className="points-label">POINTS</span>
+        </div>
+      </div>
+
       <div className="overlay profile-menu">
         <button className="profile-button" onClick={() => setDropdownOpen(!dropdownOpen)}>
-          User Profile {!loading && points && `(${points} pts)`}
+          User Profile
         </button>
         <div className={`profile-dropdown ${dropdownOpen ? "show" : ""}`}>
           <a
@@ -125,17 +140,26 @@ export default function Overlay({ showAddTask, setShowAddTask, addNewTask }) {
           >
             Add Task
           </a>
-          <a href="#">Shop</a>
+          <a 
+            href="#"
+            onClick={() => {
+              setShowShop(true)
+              setDropdownOpen(false)
+            }}
+          >
+            Shop
+          </a>
         </div>
       </div>
 
-      {/* Sample Text */}
       <div className="overlay sample-text">
         <h3>Welcome to the Task Environment</h3>
-        <p>Use WASD or arrow keys to move around. Click on the cubes to visit task links or add new tasks.</p>
+        <p>
+          Use WASD or arrow keys to move around. Click on the cubes to visit task links or check the box to complete
+          tasks.
+        </p>
       </div>
 
-      {/* Add Task Modal */}
       {showAddTask && (
         <div className="overlay add-task-modal">
           <div className="modal-content">
@@ -180,6 +204,37 @@ export default function Overlay({ showAddTask, setShowAddTask, addNewTask }) {
                 Add Task
               </button>
             </form>
+          </div>
+        </div>
+      )}
+
+      {showShop && (
+        <div className="overlay add-task-modal">
+          <div className="modal-content">
+            <button className="close-button" onClick={() => setShowShop(false)}>
+              ×
+            </button>
+            <h2>Color Shop</h2>
+            <div className="shop-content">
+              <div className="shop-items">
+                {colorOptions.map((color) => (
+                  <div 
+                    key={color.value} 
+                    className={`shop-item ${totalPoints >= color.cost ? '' : 'disabled'}`}
+                    onClick={() => totalPoints >= color.cost && onColorPurchase(color.value, color.cost)}
+                  >
+                    <div 
+                      className="color-swatch" 
+                      style={{ backgroundColor: color.value }}
+                    />
+                    <div className="item-details">
+                      <h3>{color.name}</h3>
+                      <p>{color.cost} points</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       )}

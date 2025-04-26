@@ -158,3 +158,105 @@ html, body, #root {
 .submit-button:hover {
   background: rgba(30, 136, 229, 1);
 }
+
+/* Add these styles to your existing CSS */
+
+.points-counter {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 100;
+}
+
+.points-display {
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: 8px;
+  padding: 10px 15px;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  backdrop-filter: blur(5px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.points-value {
+  font-size: 24px;
+  font-weight: bold;
+  color: #ffeb3b;
+}
+
+.points-label {
+  font-size: 12px;
+  letter-spacing: 1px;
+  opacity: 0.8;
+}
+
+/* Animation for points increase */
+@keyframes pointsAdded {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.points-added {
+  animation: pointsAdded 0.5s ease-in-out;
+}
+
+/* Add to your existing CSS */
+.shop-content {
+  padding: 20px 0;
+}
+
+.shop-items {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+  margin-top: 10px;
+}
+
+.shop-item {
+  background: rgba(50, 50, 50, 0.8);
+  border-radius: 8px;
+  padding: 15px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.shop-item:hover {
+  background: rgba(70, 70, 70, 0.8);
+  transform: translateY(-2px);
+}
+
+.shop-item.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.color-swatch {
+  width: 100%;
+  height: 60px;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.item-details h3 {
+  margin: 0 0 5px 0;
+  color: white;
+  font-size: 16px;
+}
+
+.item-details p {
+  margin: 0;
+  color: #FFEB3B;
+  font-size: 14px;
+}
