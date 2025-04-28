@@ -59,10 +59,9 @@ Taskbot is a gamified task management application that transforms your to-do lis
    ```
    
 2. Install dependencies for both frontend and backend:
-   ```bash
-   # Install frontend dependencies
+  ```bash
+  # Install frontend dependencies
   npm install
-
   # Install backend dependencies
   cd server
   npm install
