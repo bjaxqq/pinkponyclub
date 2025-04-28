@@ -80,28 +80,22 @@ export default function Environment({ onAddTaskClick, tasks, onCompleteTask, cur
         <meshStandardMaterial color="grey" />
       </mesh>
 
-      {/* Removed the grid helper that was here */}
-
       <group position={[0, 1, 0]}>
-        {/* Main face box */}
         <mesh castShadow receiveShadow>
           <boxGeometry args={[3, 2, 0.5]} />
           <meshStandardMaterial color={currentColor || "#1E88E5"} />
         </mesh>
 
-        {/* Left eye */}
         <mesh position={[-0.7, 0.3, 0.26]} castShadow>
           <sphereGeometry args={[0.2, 16, 16]} />
           <meshStandardMaterial color="black" />
         </mesh>
 
-        {/* Right eye */}
         <mesh position={[0.7, 0.3, 0.26]} castShadow>
           <sphereGeometry args={[0.2, 16, 16]} />
           <meshStandardMaterial color="black" />
         </mesh>
 
-        {/* Mouth */}
         <mesh position={[0, -0.4, 0.26]} castShadow>
           <boxGeometry args={[1.2, 0.2, 0.1]} />
           <meshStandardMaterial color="black" />
@@ -109,7 +103,7 @@ export default function Environment({ onAddTaskClick, tasks, onCompleteTask, cur
       </group>
 
       {tasks.map((task, index) => (
-        <TaskCube key={index} task={task} index={index} onCompleteTask={onCompleteTask} />
+        <TaskCube key={task.id || index} task={task} index={index} onCompleteTask={onCompleteTask} />
       ))}
     </>
   )

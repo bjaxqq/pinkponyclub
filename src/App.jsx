@@ -1,27 +1,11 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Canvas } from "@react-three/fiber"
 import Environment from "./Environment"
 import ThirdPersonController from "./ThirdPersonController"
 import Overlay from "./Overlay"
-
-async function updatePoints(points) {
-  try {
-    const requestOptions = {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ points }),
-    }
-    const response = await fetch("http://localhost:3000/updatePoints", requestOptions)
-    return await response.json()
-  } catch (error) {
-    console.error("Error updating points:", error)
-    return null
-  }
-}
+import api from "./api"
 
 export default function App() {
   const [showAddTask, setShowAddTask] = useState(false)
@@ -29,31 +13,66 @@ export default function App() {
   const [totalPoints, setTotalPoints] = useState(0)
   const [currentColor, setCurrentColor] = useState("#1E88E5")
   const [showShop, setShowShop] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
 
-  const addNewTask = (taskData) => {
-    setTasks([...tasks, taskData])
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        setIsLoading(true)
+        const data = await api.getAllData()
+        setTasks(data.tasks)
+        setTotalPoints(data.totalPoints)
+        setCurrentColor(data.currentColor)
+        setIsLoading(false)
+      } catch (error) {
+        console.error("Error loading data:", error)
+        setIsLoading(false)
+      }
+    }
+    
+    loadData()
+  }, [])
+
+  const addNewTask = async (taskData) => {
+    try {
+      const newTask = await api.addTask(taskData)
+      setTasks([...tasks, newTask])
+    } catch (error) {
+      console.error("Error adding task:", error)
+    }
   }
 
   const completeTask = async (task) => {
     try {
-      const newPoints = totalPoints + (task.points || 5)
-      setTotalPoints(newPoints)
-      setTasks(tasks.filter((t) => t !== task))
-      await updatePoints(newPoints)
-      console.log(`Task completed! Earned ${task.points || 5} points.`)
+      const result = await api.completeTask(task.id)
+      setTotalPoints(result.totalPoints)
+      setTasks(tasks.filter((t) => t.id !== task.id))
+      console.log(`Task completed! Earned ${result.pointsEarned} points.`)
     } catch (error) {
       console.error("Error completing task:", error)
     }
   }
 
-  const handleColorPurchase = (color, cost) => {
+  const handleColorPurchase = async (color, cost) => {
     if (totalPoints >= cost) {
-      setCurrentColor(color)
-      setTotalPoints(totalPoints - cost)
-      setShowShop(false)
+      try {
+        const newPoints = totalPoints - cost
+        await api.updatePoints(newPoints)
+        setTotalPoints(newPoints)
+        
+        await api.updateColor(color)
+        setCurrentColor(color)
+        setShowShop(false)
+      } catch (error) {
+        console.error("Error purchasing color:", error)
+      }
     } else {
       alert("Not enough points!")
     }
+  }
+
+  if (isLoading) {
+    return <div>Loading...</div>
   }
 
   return (

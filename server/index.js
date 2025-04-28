@@ -1,54 +1,154 @@
-import axios from 'axios';
-import { readJsonFile, writeJsonFile } from './utils.js';
 import express from 'express';
 import cors from 'cors';
+import fs from 'fs/promises';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
-const port = 3000;
-app.use(cors({
-  origin: 'http://127.0.0.1:5500'
-}));
+const PORT = process.env.PORT || 3001;
+
+app.use(cors());
 app.use(express.json());
 
-app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
-});
+const dataFilePath = path.join(__dirname, 'data.json');
 
-app.get('/tasks', async (req, res) => {
+async function initializeDataFile() {
   try {
-    const task = await readJsonFile('tasks.json');
-    return res.status(200).json(task);
+    await fs.access(dataFilePath);
   } catch (error) {
-    console.error('Error reading file', error);
-    return res.status(404).json({ error: 'reading file' });
+    const defaultData = {
+      totalPoints: 0,
+      purchasedColors: [],
+      currentColor: "#1E88E5",
+      tasks: []
+    };
+    await fs.writeFile(dataFilePath, JSON.stringify(defaultData, null, 2));
+  }
+}
+
+async function readData() {
+  const data = await fs.readFile(dataFilePath, 'utf8');
+  return JSON.parse(data);
+}
+
+async function writeData(data) {
+  await fs.writeFile(dataFilePath, JSON.stringify(data, null, 2));
+}
+
+initializeDataFile();
+
+
+app.get('/api/data', async (req, res) => {
+  try {
+    const data = await readData();
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching data', error: error.message });
   }
 });
 
-app.post('/addTask', async (req, res) => {
+app.put('/api/points', async (req, res) => {
   try {
-    const task = await readJsonFile('tasks.json');
-    const newTask = req.body;
-    newTask.points = 5;
-    console.log(newTask);
-    task.push(newTask);
-    console.log(task);
-
-    await writeJsonFile('tasks.json', task);
-    return res.status(200).json(task);
+    const { points } = req.body;
+    const data = await readData();
+    data.totalPoints = points;
+    await writeData(data);
+    res.json({ totalPoints: data.totalPoints });
   } catch (error) {
-    console.error('Error reading file', error);
-    return res.status(404).json({ error: 'reading file' });
+    res.status(500).json({ message: 'Error updating points', error: error.message });
   }
 });
 
-// Add this new endpoint
-app.post('/updateColor', async (req, res) => {
+app.put('/api/color', async (req, res) => {
   try {
     const { color } = req.body;
-    // In a real app, you'd save this to a user profile
-    return res.status(200).json({ success: true, color });
+    const data = await readData();
+    data.currentColor = color;
+    
+    if (!data.purchasedColors.includes(color)) {
+      data.purchasedColors.push(color);
+    }
+    
+    await writeData(data);
+    res.json({ currentColor: data.currentColor, purchasedColors: data.purchasedColors });
   } catch (error) {
-    console.error('Error updating color', error);
-    return res.status(500).json({ error: 'Error updating color' });
+    res.status(500).json({ message: 'Error updating color', error: error.message });
   }
+});
+
+app.get('/api/tasks', async (req, res) => {
+  try {
+    const data = await readData();
+    res.json(data.tasks);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching tasks', error: error.message });
+  }
+});
+
+app.post('/api/tasks', async (req, res) => {
+  try {
+    const newTask = req.body;
+    const data = await readData();
+    
+    newTask.id = Date.now().toString();
+    
+    data.tasks.push(newTask);
+    await writeData(data);
+    res.status(201).json(newTask);
+  } catch (error) {
+    res.status(500).json({ message: 'Error adding task', error: error.message });
+  }
+});
+
+app.delete('/api/tasks/:id', async (req, res) => {
+  try {
+    const taskId = req.params.id;
+    const data = await readData();
+    
+    const taskIndex = data.tasks.findIndex(task => task.id === taskId);
+    
+    if (taskIndex === -1) {
+      return res.status(404).json({ message: 'Task not found' });
+    }
+    
+    data.tasks.splice(taskIndex, 1);
+    await writeData(data);
+    res.json({ message: 'Task deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error deleting task', error: error.message });
+  }
+});
+
+app.post('/api/tasks/:id/complete', async (req, res) => {
+  try {
+    const taskId = req.params.id;
+    const data = await readData();
+    
+    const taskIndex = data.tasks.findIndex(task => task.id === taskId);
+    
+    if (taskIndex === -1) {
+      return res.status(404).json({ message: 'Task not found' });
+    }
+    
+    const task = data.tasks[taskIndex];
+    const pointsEarned = task.points || 5;
+    
+    data.totalPoints += pointsEarned;
+    
+    data.tasks.splice(taskIndex, 1);
+    
+    await writeData(data);
+    res.json({ 
+      message: 'Task completed successfully', 
+      pointsEarned,
+      totalPoints: data.totalPoints 
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Error completing task', error: error.message });
+  }
+});
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
